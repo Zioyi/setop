@@ -8,51 +8,45 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	Intersect = iota + 1 // 交集
-	Union                // 并集
-	Subtract             // 差集
-)
-
 var desc = strings.Join([]string{
-	"对两个csv文件数据进行集合运算，模式如下: ",
-	"1: 交集 两个集合公共的数据",
-	"2: 并集 连个集合合并的数据",
-	"3: 补集 集合1中有且集合2中没有的数据",
+	"对两个单列csv文件数据进行集合运算: ",
+	"交集 两个集合公共的数据",
+	"并集 两个集合合并的数据",
+	"差集 集合1中有且集合2中没有的数据",
 }, "\n")
 
-var mode int8
-var setAFilePath string
-var setBFilePath string
-var resultFilePath string
+var examples = strings.Join([]string{
+	"求交集：setop interect A.csv B.csv result.csv",
+	"求并集：setop union A.csv B.csv result.csv",
+	"求差集：setop subtract A.csv B.csv result.csv",
+}, "\n")
 
 var rootCmd = &cobra.Command{
-	Use:     "",
+	Use:     "setop",
 	Short:   "集合运算",
 	Long:    desc,
-	Example: "setop -m 1 --setA A.csv --setB B.csv --result C.csv",
+	Example: examples,
 	Run: func(cmd *cobra.Command, args []string) {
+		cobra.MinimumNArgs(4)
+		mode := args[0]
+		setAFilePath := args[1]
+		setBFilePath := args[2]
+		resultFilePath := args[3]
+
 		setA := internal.ReadSet(setAFilePath)
 		setB := internal.ReadSet(setBFilePath)
 		var setResult []string
 
 		switch mode {
-		case Intersect:
+		case "intersect":
 			setResult = internal.Intersect(setA, setB)
-		case Union:
+		case "union":
 			setResult = internal.Union(setA, setB)
-		case Subtract:
+		case "subtract":
 			setResult = internal.Subtract(setA, setB)
 		}
 		internal.WriteSet(setResult, resultFilePath)
 	},
-}
-
-func init() {
-	rootCmd.Flags().Int8VarP(&mode, "mode", "m", 0, "模式")
-	rootCmd.Flags().StringVarP(&setAFilePath, "setA", "a", "", "集合A文件路径")
-	rootCmd.Flags().StringVarP(&setBFilePath, "setB", "b", "", "集合B文件路径")
-	rootCmd.Flags().StringVarP(&resultFilePath, "result", "r", "", "运算结果文件路径")
 }
 
 func Execute() error {
