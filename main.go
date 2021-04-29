@@ -16,7 +16,7 @@ var desc = strings.Join([]string{
 }, "\n")
 
 var examples = strings.Join([]string{
-	"求交集：setop interect A.csv B.csv result.csv",
+	"求交集：setop intersect A.csv B.csv result.csv",
 	"求并集：setop union A.csv B.csv result.csv",
 	"求差集：setop subtract A.csv B.csv result.csv",
 }, "\n")
